@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI & Tech: Future in Motion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            overflow: hidden;
+            color: #fff;
+            cursor: none;
+        }
+        
+        /* Custom Cursor */
+        .cursor {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0, 212, 255, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease, border-color 0.15s;
+            mix-blend-mode: difference;
+        }
+        
+        .cursor.click {
+            transform: scale(1.5);
+            border-color: #7b2ff7;
+        }
+        
+        /* Animated Background */
+        .bg-animated {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+            z-index: -1;
+        }
+        
+        .bg-animated::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        
+        @keyframes bgShift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-50px, -50px); }
+        }
+        
+        /* Particle System */
+        .particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(0, 212, 255, 0.6);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+        
+        /* Slides Container */
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            perspective: 1500px;
+        }
+        
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            opacity: 0;
+            transform: translateZ(-200px) rotateY(90deg);
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            transform: translateZ(0) rotateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+        
+        .slide.prev {
+            transform: translateZ(-200px) rotateY(-90deg);
+            opacity: 0;
+        }
+        
+        /* Glass Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 60px;
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            max-width: 900px;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 20px 60px 0 rgba(0, 212, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+        
+        /* Typography */
+        .slide h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 50%, #ff0096 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 4s ease infinite;
+            letter-spacing: -2px;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .slide h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 50px;
+            color: #00d4ff;
+            text-align: center;
+            position: relative;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .slide h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #7b2ff7, transparent);
+            border-radius: 2px;
+        }
+        
+        .slide p {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            max-width: 700px;
+            line-height: 1.6;
+        }
+        
+        /* Bullets with Icons */
+        .bullets {
+            list-style: none;
+            font-size: 1.8rem;
+            line-height: 2.5;
+            width: 100%;
+        }
+        
+        .bullets li {
+            padding: 20px 30px;
+            margin: 10px 0;
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid transparent;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .slide.active .bullets li {
+            animation: slideInBounce 0.6s forwards;
+        }
+        
+        .slide.active .bullets li:nth-child(1) { animation-delay: 0.1s; }
+        .slide.active .bullets li:nth-child(2) { animation-delay: 0.2s; }
+        .slide.active .bullets li:nth-child(3) { animation-delay: 0.3s; }
+        .slide.active .bullets li:nth-child(4) { animation-delay: 0.4s; }
+        
+        .bullets li:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 5px 25px rgba(0, 212, 255, 0.2);
+        }
+        
+        .bullets li::before {
+            content: "⚡";
+            position: absolute;
+            left: -5px;
+            font-size: 2rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .bullets li:hover::before {
+            opacity: 1;
+            left: 5px;
+        }
+        
+        @keyframes slideInBounce {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            70% {
+                transform: translateX(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Two Columns Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+            max-width: 1100px;
+        }
+        
+        .column {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+        
+        .column:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+        
+        .column h3 {
+            font-size: 2rem;
+            color: #7b2ff7;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        /* Image Container with 3D Hover */
+        .image-container {
+            width: 500px;
+            height: 350px;
+            margin: 40px auto 0;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .image-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(123, 47, 247, 0.3));
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+        
+        .image-container:hover::before {
+            opacity: 1;
+        }
+        
+        .image-container:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg) scale(1.05);
+            box-shadow: 0 35px 80px rgba(0, 212, 255, 0.4);
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .image-container:hover img {
+            transform: scale(1.1);
+        }
+        
+        .slide.active .image-container {
+            animation: zoomInRotate 1s ease forwards;
+        }
+        
+        @keyframes zoomInRotate {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotateZ(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateZ(0deg);
+            }
+        }
+        
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .dot:hover {
+            background: rgba(0, 212, 255, 0.5);
+            transform: scale(1.3);
+        }
+        
+        .dot.active {
+            background: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+            width: 16px;
+            height: 16px;
+        }
+        
+        .dot::after {
+            content: attr(data-slide);
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            color: #fff;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .dot:hover::after {
+            opacity: 1;
+        }
+        
+        /* Progress Bar Circular */
+        .progress-ring {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            width: 80px;
+            height: 80px;
+            z-index: 1000;
+        }
+        
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 4;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .progress-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-fill {
+            stroke: url(#gradient);
+            stroke-linecap: round;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        /* Navigation Hints */
+        .nav-hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .nav-btn:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .nav-btn span {
+            font-size: 1.2rem;
+        }
+        
+        /* Slide Specific Styles */
+        #slide1 .glass-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: #0a0e27;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .slide h1 { font-size: 3.5rem; }
+            .slide h2 { font-size: 2.5rem; }
+            .bullets { font-size: 1.4rem; }
+            .image-container { width: 400px; height: 280px; }
+            .two-columns { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <div class="loader"></div>
+    </div>
+    
+    <div class="cursor"></div>
+    <div class="bg-animated"></div>
+    
+    <canvas class="particles" id="particleCanvas"></canvas>
+    
+    <div class="presentation">
+        <!-- Slide 1 -->
+        <div class="slide active" id="slide1" data-slide="1">
+            <div class="glass-card">
+                <h1>AI & Tech:<br>Future in Motion</h1>
+                <p>Interactive presentation with stunning animations</p>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500&h=350&fit=crop" alt="AI">
+            </div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="slide" data-slide="2">
+            <h2>Why AI Now</h2>
+            <div class="glass-card">
+                <ul class="bullets">
+                    <li>Big data scale unlocks patterns</li>
+                    <li>Compute becomes affordable</li>
+                    <li>Models generalize across domains</li>
+                    <li>Real-world use cases proven</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500&h=350&fit=crop" alt="Data">
+            </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide" data-slide="3">
+            <h2>Core Tech Stack</h2>
+            <div class="glass-card">
+                <ul class="bullets">
+                    <li>LLM + RAG architecture</li>
+                    <li>Agentic autonomous systems</li>
+                    <li>Vector databases for semantic search</li>
+                    <li>MLOps continuous deployment</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1639322537228-f710d846310a?w=500&h=350&fit=crop" alt="Tech">
+            </div>
+        </div>
+        
+        <!-- Slide 4 -->
+        <div class="slide" data-slide="4">
+            <h2>AI × UX Excellence</h2>
+            <div class="two-columns">
+                <div class="column">
+                    <h3>🚀 Features</h3>
+                    <ul class="bullets">
+                        <li>Chat to action</li>
+                        <li>Personalization</li>
+                        <li>Voice & vision</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>⚡ Quality</h3>
+                    <ul class="bullets">
+                        <li>Low latency</li>
+                        <li>Guardrails</li>
+                        <li>Feedback loop</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 5 -->
+        <div class="slide" data-slide="5">
+            <h2>Use Cases</h2>
+            <div class="glass-card">
+                <ul class="bullets">
+                    <li>24/7 support automation</li>
+                    <li>Intelligent code assistance</li>
+                    <li>Content operation scaling</li>
+                    <li>BI insights generation</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=350&fit=crop" alt="Business">
+            </div>
+        </div>
+        
+        <!-- Slide 6 -->
+        <div class="slide" data-slide="6">
+            <h2>Risks & Ethics</h2>
+            <div class="glass-card">
+                <ul class="bullets">
+                    <li>Hallucination mitigation strategies</li>
+                    <li>Bias detection and correction</li>
+                    <li>Privacy-first architecture</li>
+                    <li>Cost control mechanisms</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=500&h=350&fit=crop" alt="Ethics">
+            </div>
+        </div>
+        
+        <!-- Slide 7 -->
+        <div class="slide" data-slide="7">
+            <h2>Roadmap Ahead</h2>
+            <div class="glass-card">
+                <ul class="bullets">
+                    <li>PoC delivery in 2 weeks</li>
+                    <li>Pilot user onboarding</li>
+                    <li>Metrics tracking system</li>
+                    <li>Gated scaling strategy</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=350&fit=crop" alt="Roadmap">
+            </div>
+        </div>
+        
+        <!-- Slide 8 -->
+        <div class="slide" data-slide="8">
+            <div class="glass-card">
+                <h1>Q&A</h1>
+                <p>Thank you for watching this interactive presentation</p>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&h=350&fit=crop" alt="Team">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress Ring -->
+    <div class="progress-ring">
+        <svg width="80" height="80">
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#7b2ff7;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <circle class="progress-bg" cx="40" cy="40" r="35"></circle>
+            <circle class="progress-fill" cx="40" cy="40" r="35" id="progressCircle"></circle>
+        </svg>
+        <div class="progress-text" id="progressText">1/8</div>
+    </div>
+    
+    <!-- Navigation Dots -->
+    <div class="nav-dots" id="navDots"></div>
+    
+    <!-- Navigation Hints -->
+    <div class="nav-hint">
+        <div class="nav-btn" onclick="prevSlide()">
+            <span>←</span> Prev
+        </div>
+        <div class="nav-btn" onclick="nextSlide()">
+            Next <span>→</span>
+        </div>
+    </div>
+    
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+        
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 20 + 'px';
+            cursor.style.top = e.clientY - 20 + 'px';
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('click');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('click');
+        });
+        
+        // Particle System
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        for (let i = 0; i < 100; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 2 + 1
+            });
+        }
+        
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+            
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            });
+            
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+        
+        // Navigation Dots
+        const navDots = document.getElementById('navDots');
+        for (let i = 1; i <= totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 1 ? ' active' : '');
+            dot.dataset.slide = `Slide ${i}`;
+            dot.onclick = () => goToSlide(i);
+            navDots.appendChild(dot);
+        }
+        
+        function updateSlide(newSlide) {
+            if (newSlide < 1 || newSlide > totalSlides) return;
+            
+            const current = document.querySelector('.slide.active');
+            const next = document.querySelector(`.slide[data-slide="${newSlide}"]`);
+            
+            current.classList.remove('active');
+            current.classList.add('prev');
+            
+            setTimeout(() => {
+                current.classList.remove('prev');
+            }, 1000);
+            
+            next.classList.add('active');
+            
+            currentSlide = newSlide;
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            document.getElementById('progressText').textContent = `${currentSlide}/${totalSlides}`;
+            
+            const circumference = 2 * Math.PI * 35;
+            const progress = (currentSlide / totalSlides) * circumference;
+            const circle = document.getElementById('progressCircle');
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = circumference - progress;
+            
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i + 1 === currentSlide);
+            });
+        }
+        
+        function nextSlide() {
+            updateSlide(currentSlide + 1);
+        }
+        
+        function prevSlide() {
+            updateSlide(currentSlide - 1);
+        }
+        
+        function goToSlide(n) {
+            updateSlide(n);
+        }
+        
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+        
+        // Click Navigation
+        document.querySelector('.presentation').addEventListener('click', (e) => {
+            if (e.target.closest('.glass-card, .image-container, .bullets')) return;
+            if (e.clientX > window.innerWidth / 2) nextSlide();
+            else prevSlide();
+        });
+        
+        // 3D Hover Effect on Images
+        document.querySelectorAll('.image-container').forEach(img => {
+            img.addEventListener('mousemove', (e) => {
+                const rect = img.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                const rotateX = (y - 0.5) * 20;
+                const rotateY = (x - 0.5) * -20;
+                img.style.transform = `translateY(-15px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            });
+            
+            img.addEventListener('mouseleave', () => {
+                img.style.transform = '';
+            });
+        });
+        
+        // Loading
+        window.addEventListener('load', () => {
+            updateProgress();
+            setTimeout(() => {
+                document.querySelector('.loading').classList.add('hidden');
+            }, 1000);
+        });
+        
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
